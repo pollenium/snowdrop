@@ -65,7 +65,15 @@ var Snowdrop = /** @class */ (function () {
         if (!handle) {
             throw new RemovingNonExistantHandleError(id);
         }
+        delete this.handlesById[id.value];
         this.handlesCount -= 1;
+    };
+    Snowdrop.prototype.removeAllHandles = function () {
+        for (var value = 0; value < this.nextHandleId.value; value++) {
+            if (this.handlesById[value]) {
+                this.removeHandleById(new HandleId(value));
+            }
+        }
     };
     Snowdrop.prototype.emit = function (data) {
         if (this.handlesCount === 0) {

@@ -46,7 +46,16 @@ export class Snowdrop<T> {
     if (!handle) {
       throw new RemovingNonExistantHandleError(id)
     }
+    delete this.handlesById[id.value]
     this.handlesCount -= 1
+  }
+
+  removeAllHandles(): void {
+    for (let value = 0; value < this.nextHandleId.value; value++) {
+      if (this.handlesById[value]) {
+        this.removeHandleById(new HandleId(value))
+      }
+    }
   }
 
   emit(data: T) {

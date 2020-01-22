@@ -19,6 +19,7 @@ export declare class Snowdrop<T> {
     private handlesCount;
     addHandle(handle: handle<T>): HandleId;
     removeHandleById(id: HandleId): void;
+    removeAllHandles(): void;
     emit(data: T): void;
     emitIfHandle(data: T): void;
 }
