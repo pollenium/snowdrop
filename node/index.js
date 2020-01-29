@@ -87,7 +87,7 @@ var Snowdrop = /** @class */ (function () {
         }
     };
     Snowdrop.prototype.emitIfHandle = function (data) {
-        if (this.nextHandleId.value > 0) {
+        if (this.handlesCount > 0) {
             this.emit(data);
         }
     };

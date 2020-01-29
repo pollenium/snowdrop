@@ -71,7 +71,7 @@ export class Snowdrop<T> {
   }
 
   emitIfHandle(data: T) {
-    if (this.nextHandleId.value > 0) {
+    if (this.handlesCount > 0) {
       this.emit(data)
     }
   }
