@@ -16,6 +16,12 @@ export class RemovingNonExistantHandleError extends SnowdropError {
   }
 }
 
+export class ExceedsMaxEmitsCountError extends SnowdropError {
+  constructor(maxEmitsCount: number) {
+    super(`Trying to emit beyound maxEmitsCount of ${maxEmitsCount}`)
+  }
+}
+
 
 export type handle<T> = (T) => void;
 
@@ -29,9 +35,24 @@ export class HandleId {
 
 export class Snowdrop<T> {
 
+  readonly options: {
+    maxEmitsCount: number | null
+  } = {
+    maxEmitsCount: null
+  }
+
   private nextHandleId: HandleId = new HandleId(0)
   private handlesById: { [key: number]: handle<T> } = {}
   private handlesCount: number = 0
+  private emitsCount: number = 0
+
+  constructor(options?: {
+    maxEmitsCount?: number | null
+  }) {
+    if (options) {
+      this.options = Object.assign(this.options, options)
+    }
+  }
 
   addHandle(handle: handle<T>): HandleId {
     const handleId = this.nextHandleId
@@ -62,6 +83,12 @@ export class Snowdrop<T> {
     if (this.handlesCount === 0) {
       throw new EmitWithoutHandlesError()
     }
+    if (this.options.maxEmitsCount !== null) {
+      if (this.emitsCount === this.options.maxEmitsCount) {
+        throw new ExceedsMaxEmitsCountError(this.options.maxEmitsCount)
+      }
+    }
+    this.emitsCount += 1
     for (let i = 0; i < this.nextHandleId.value; i++) {
       const handle = this.handlesById[i]
       if (handle) {

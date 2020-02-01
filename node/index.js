@@ -37,6 +37,14 @@ var RemovingNonExistantHandleError = /** @class */ (function (_super) {
     return RemovingNonExistantHandleError;
 }(SnowdropError));
 exports.RemovingNonExistantHandleError = RemovingNonExistantHandleError;
+var ExceedsMaxEmitsCountError = /** @class */ (function (_super) {
+    __extends(ExceedsMaxEmitsCountError, _super);
+    function ExceedsMaxEmitsCountError(maxEmitsCount) {
+        return _super.call(this, "Trying to emit beyound maxEmitsCount of " + maxEmitsCount) || this;
+    }
+    return ExceedsMaxEmitsCountError;
+}(SnowdropError));
+exports.ExceedsMaxEmitsCountError = ExceedsMaxEmitsCountError;
 var HandleId = /** @class */ (function () {
     function HandleId(value) {
         this.value = value;
@@ -48,10 +56,17 @@ var HandleId = /** @class */ (function () {
 }());
 exports.HandleId = HandleId;
 var Snowdrop = /** @class */ (function () {
-    function Snowdrop() {
+    function Snowdrop(options) {
+        this.options = {
+            maxEmitsCount: null
+        };
         this.nextHandleId = new HandleId(0);
         this.handlesById = {};
         this.handlesCount = 0;
+        this.emitsCount = 0;
+        if (options) {
+            this.options = Object.assign(this.options, options);
+        }
     }
     Snowdrop.prototype.addHandle = function (handle) {
         var handleId = this.nextHandleId;
@@ -79,6 +94,12 @@ var Snowdrop = /** @class */ (function () {
         if (this.handlesCount === 0) {
             throw new EmitWithoutHandlesError();
         }
+        if (this.options.maxEmitsCount !== null) {
+            if (this.emitsCount === this.options.maxEmitsCount) {
+                throw new ExceedsMaxEmitsCountError(this.options.maxEmitsCount);
+            }
+        }
+        this.emitsCount += 1;
         for (var i = 0; i < this.nextHandleId.value; i++) {
             var handle = this.handlesById[i];
             if (handle) {
