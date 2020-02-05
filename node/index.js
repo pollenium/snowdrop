@@ -42,6 +42,7 @@ var Snowdrop = /** @class */ (function () {
         this.options = {
             maxEmitsCount: null
         };
+        this.nextHandleId = 0;
         this.handlesById = {};
         this.handlesCount = 0;
         this.emitsCount = 0;

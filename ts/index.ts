@@ -26,7 +26,7 @@ export class Snowdrop<T> {
     maxEmitsCount: null
   }
 
-  private nextHandleId: 0
+  private nextHandleId: number = 0
   private handlesById: { [id: number]: handle<T> } = {}
   private handlesCount: number = 0
   private emitsCount: number = 0

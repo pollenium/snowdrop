@@ -4,7 +4,7 @@
   "description": "",
   "main": "node/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "jest": "jest",
     "tsc": "rm -rf node/**/** && tsc"
   },
   "repository": {
@@ -18,7 +18,13 @@
   },
   "homepage": "https://github.com/pollenium/snowdrop#readme",
   "devDependencies": {
+    "@types/jest": "^25.1.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.0",
     "tsc": "^1.20150623.0",
     "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@types/node": "^13.7.0"
   }
 }
