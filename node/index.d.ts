@@ -10,7 +10,7 @@ export declare class RemovingNonExistantHandleError extends SnowdropError {
 export declare class ExceedsMaxEmitsCountError extends SnowdropError {
     constructor(maxEmitsCount: number);
 }
-export declare type handle<T> = (T: any) => void;
+export declare type handle<T> = (value: T) => void;
 export declare class HandleId {
     readonly value: number;
     constructor(value: number);
