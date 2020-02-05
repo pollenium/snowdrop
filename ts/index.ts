@@ -23,7 +23,7 @@ export class ExceedsMaxEmitsCountError extends SnowdropError {
 }
 
 
-export type handle<T> = (T) => void;
+export type handle<T> = (value: T) => void;
 
 export class HandleId {
   constructor(readonly value: number) {}
