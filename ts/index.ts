@@ -4,15 +4,9 @@ export class SnowdropError extends Error {
   }
 }
 
-export class EmitWithoutHandlesError extends SnowdropError {
-  constructor() {
-    super('Emitted without any handles')
-  }
-}
-
 export class RemovingNonExistantHandleError extends SnowdropError {
-  constructor(handleId: HandleId) {
-    super(`Trying to remove a handle that doesn\'t exist: ${handleId.value}`)
+  constructor(handleId: number) {
+    super(`Trying to remove a handle that doesn\'t exist: ${handleId}`)
   }
 }
 
@@ -22,16 +16,7 @@ export class ExceedsMaxEmitsCountError extends SnowdropError {
   }
 }
 
-
-export type handle<T> = (value: T) => void;
-
-export class HandleId {
-  constructor(readonly value: number) {}
-
-  genNext() {
-    return new HandleId(this.value + 1)
-  }
-}
+export type handle<T> = (value: T) => void
 
 export class Snowdrop<T> {
 
@@ -41,8 +26,8 @@ export class Snowdrop<T> {
     maxEmitsCount: null
   }
 
-  private nextHandleId: HandleId = new HandleId(0)
-  private handlesById: { [key: number]: handle<T> } = {}
+  private nextHandleId: 0
+  private handlesById: { [id: number]: handle<T> } = {}
   private handlesCount: number = 0
   private emitsCount: number = 0
 
@@ -54,52 +39,43 @@ export class Snowdrop<T> {
     }
   }
 
-  addHandle(handle: handle<T>): HandleId {
+  addHandle(handle: handle<T>): number {
     const handleId = this.nextHandleId
-    this.handlesById[handleId.value] = handle
-    this.nextHandleId = this.nextHandleId.genNext()
+    this.handlesById[handleId] = handle
+    this.nextHandleId += 1
     this.handlesCount += 1
     return handleId
   }
 
-  removeHandleById(id: HandleId): void {
-    const handle = this.handlesById[id.value]
+  removeHandleById(id: number): void {
+    const handle = this.handlesById[id]
     if (!handle) {
       throw new RemovingNonExistantHandleError(id)
     }
-    delete this.handlesById[id.value]
+    delete this.handlesById[id]
     this.handlesCount -= 1
   }
 
   removeAllHandles(): void {
-    for (let value = 0; value < this.nextHandleId.value; value++) {
+    for (let value = 0; value < this.nextHandleId; value++) {
       if (this.handlesById[value]) {
-        this.removeHandleById(new HandleId(value))
+        this.removeHandleById(value)
       }
     }
   }
 
   emit(data: T) {
-    if (this.handlesCount === 0) {
-      throw new EmitWithoutHandlesError()
-    }
     if (this.options.maxEmitsCount !== null) {
       if (this.emitsCount === this.options.maxEmitsCount) {
         throw new ExceedsMaxEmitsCountError(this.options.maxEmitsCount)
       }
     }
     this.emitsCount += 1
-    for (let i = 0; i < this.nextHandleId.value; i++) {
+    for (let i = 0; i < this.nextHandleId; i++) {
       const handle = this.handlesById[i]
       if (handle) {
         handle(data)
       }
-    }
-  }
-
-  emitIfHandle(data: T) {
-    if (this.handlesCount > 0) {
-      this.emit(data)
     }
   }
 
